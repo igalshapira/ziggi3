@@ -3,12 +3,14 @@
 ## Installation
 
 Ziggi 3.0 is a nodejs application. So basically after installation of node. a simple:
+
 ```
 npm install
 node index.js
 ```
 
 should do the work.
+
 
 ## History
 
@@ -18,6 +20,20 @@ The source code is no longer available.
 Ziggi 2 project was based on Ruby On Rails, using postgres database. The source code was never published. The site went on air in 2013 and it is the current running ziggi version (http://www.ziggi.co)
 
 Ziggi 3 is a new projected, based on MEAN stack. With no actual plans of when and where and if to deploy it.
+
+## Migrations
+
+Create a new migration
+
+```
+node_modules\.bin\mongoose-migrate-2 create <migration-name>
+```
+
+Run migrations
+
+```
+npm install
+```
 
 ## API
 

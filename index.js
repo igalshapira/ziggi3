@@ -31,6 +31,7 @@ app.use('/css',  express.static(__dirname + '/build'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
+app.set('db', require('./app/db'));
 require('./app/routes')(app);
 
 app.listen((process.env.PORT || 5000), function() {

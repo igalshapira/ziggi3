@@ -5,3 +5,4 @@ build
 out
 .env
 npm-debug.log
+migrations/.migrate
