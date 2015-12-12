@@ -2,7 +2,7 @@
 var db = require('../app/db');
 
 exports.up = function(next){
-	db.Buildings.create([
+	db.Building.create([
 		{ "lat": 31.261367, "lng": 34.799495, "name": "15", "comments": "קפה"},
 		{ "lat": 31.261563, "lng": 34.799573, "name": "16", "comments": "חוות מחשבים"},
 		{ "lat": 31.262042, "lng": 34.799689, "name": "17"},

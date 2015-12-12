@@ -12,5 +12,6 @@ mongoose.connect(dbUrl, function (err, res) {
 
 module.exports = {
     mongoose: mongoose,
-    Buildings: require('./model/buildings')(mongoose)
+    Building: require('./model/building')(mongoose),
+    Department: require('./model/department')(mongoose)
 };

@@ -8,7 +8,7 @@ module.exports = function(app) {
      * @apiError {json} status Error
      */
     app.get('/api/v3/buildings', function(request, response) {
-        app.settings.db.Buildings.find({}, { _id: 0, __v: 0 }, function(error, buildings) {
+        app.settings.db.Building.find({}, { _id: 0, __v: 0 }, function(error, buildings) {
             response.json({ 
                 status: error ? "Error" : "Ok",
                 buildings: buildings || []
