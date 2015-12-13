@@ -22,7 +22,22 @@ module.exports = function() {
         return u;
     }
 
+    function timeStringToTime(timeString)
+    {
+      var t = timeString.match(/([0-9].)[^0-9]([0-9].)/);
+      if (!t || t.length != 3)
+        return 0;
+      return Number(t[1]) + t[2]/60;
+    }
+
     return {
+      normalizeNumber: function(courseNumber) {
+            var number = courseNumber.replace(/[^0-9]/g, "");
+            var dep = number.substr(0, 3);
+            var level = number.substr(3, 1);
+            var crs = number.substr(4, 4);
+            return dep + "." + level + "." + crs;
+      },
     	searchCourses: function(string, year, semester, next) {
             var postData = "";
             postData = postData + "oc_course_name="+hebUrlEncode(string);
@@ -106,7 +121,6 @@ module.exports = function() {
             };
 
             var req = https.request(options, function(res) {
-              console.log(res.statusCode);
                 if (res.statusCode !== 200)
                     return next(null);
 
@@ -116,6 +130,9 @@ module.exports = function() {
                   })
                   .on('end', function() {
                      var html = iconv.decode(Buffer.concat(chunks), 'win1255');
+
+                     // hideous hack to fix dangled </td> in BGU exams table, which breaks cheerio
+                     html = html.replace(/<\/td><\/td>/g, "</td>");
                      var $ = cheerio.load(html);
                      
                      tds = $('form#mainForm td.BlackText')
@@ -124,6 +141,8 @@ module.exports = function() {
                          return next(null);
 
                       course = {
+                        year: year,
+                        semester: semester,
                         number: $(tds[0]).text().trim(),
                         name: $(tds[1]).text().trim(),
                         homepage: $('a', $(tds[1])).attr('href'),
@@ -133,6 +152,79 @@ module.exports = function() {
                         exams: []
                       };
 
+                      var group = null;
+                      var trs = $("tr", $('form#mainForm table')[2]);
+                      for (var t = 2; t < trs.length; t++)
+                      {
+                          var row = trs[t];
+                          var tds = $("td", row);
+
+                          // Skip some padding lines
+                          if (tds.length != 11)
+                            continue;
+
+                          // Group number can be a link
+                          var number = parseInt($("a", row).text());
+
+                          // Or without a link
+                          if (isNaN(number))
+                            number = parseInt($(tds[7]).text());
+
+                          // Or no group number - This is the same group from previous row
+                          if (!isNaN(number))
+                          {
+                            if (group !== null)
+                              course.groups.push(group);
+
+                            group = {
+                              "number": number,
+                              "type": $(tds[9]).text().trim(),
+                              "staff": $(tds[5]).text().trim(),
+                              "hours": []
+                            }
+                          }
+                          var hours = {
+                            "room": $(tds[1]).text().trim()
+                          };
+                          var h = $(tds[3]).text().match(/ ([^ ]) ([0-9][0-9]:[0-9][0-9]) - ([0-9][0-9]:[0-9][0-9])/);
+                          if (h && h.length == 4)
+                          {
+                              hours['day'] = h[1].charCodeAt(0) - 'א'.charCodeAt(0) + 1;
+                              hours['startTime'] = timeStringToTime(h[3]);
+                              hours['endTime'] = timeStringToTime(h[2]);
+                          }
+                          group.hours.push(hours);
+
+                      }
+                      if (group !== null)
+                        course.groups.push(group);
+
+                      //Exams
+                      var group = 0;
+                      if ($('form#mainForm table')[4])
+                      {
+                        var trs = $("tr", $('form#mainForm table')[4]);
+                        for (var t = 1; t < trs.length; t++)
+                        {
+                          var row = trs[t];
+                          var tds = $("td", row);
+                          if (tds.length != 7 && tds.length != 5)
+                            continue;
+                          if (tds.length == 7)
+                            group = parseInt($(tds[4]).text());
+
+                          var startTime = null;
+                          var d = $(tds[2]).text().match(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})[^0-9]*([0-9]{2}):([0-9]{2})/);
+                          if (d.length == 6)
+                            startTime = new Date(d[3]+'-'+d[2]+'-'+d[1] + 'T'+d[4]+':'+d[5]+':00.000Z');
+                          course.exams.push({
+                            group: group,
+                            startTime: startTime,
+                            rooms: $(tds[1]).text().trim(),
+                            order: $(tds[3]).text().trim(),
+                          });
+                        }
+                      }
                       return next(course);
                   });
                 });

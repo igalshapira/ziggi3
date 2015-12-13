@@ -16,7 +16,7 @@ module.exports = function(app) {
      */
     app.post('/api/v3/courses', function(request, response) {
         request.checkBody('string', 'Invalid search string').notEmpty().isMinLength(3);
-        request.checkBody('year', 'Invalid year').isInt().gte(2010);
+        request.checkBody('year', 'Invalid year').isInt().isYear();
         request.checkBody('semester', 'Invalid semester').isInt().isSemester();
         if (request.validationErrors())
             return response.json({ status: request.validationErrors() });
@@ -53,29 +53,49 @@ module.exports = function(app) {
      */
     app.post('/api/v3/course', function(request, response) {
         request.checkBody('number', 'Invalid course number').notEmpty().isMinLength(8);
-        request.checkBody('year', 'Invalid year').isInt().gte(2010);
+        request.checkBody('year', 'Invalid year').isInt().isYear();
         request.checkBody('semester', 'Invalid semester').isInt().isSemester();
         if (request.validationErrors())
             return response.json({ status: request.validationErrors() });
 
-        // TODO Look in cache first
-        var number = request.body.number;
+        var Course = app.get('db').Course;
+        var number = uni.normalizeNumber(request.body.number);
         var year = request.body.year;
         var semester = request.body.semester;
+        Course.findOne( {
+            "year" : year,
+            "semester" : semester,
+            "number" : number
+        }, '-_id -__v -groups._id -groups.hours._id -exams._id', function(err, course) {
+            if (err)
+                return response.status(500).end("500")
 
-        // If not cache
-        uni.courseInfo(number, year, semester,
-            function(course) {
-                if (!course)
-                    response.status(404);
+            if (course)
+            {
+                return response.json({
+                        status: "ok",
+                        course: course
+                    });
+            }
 
-                // TODO Add to cache
+            uni.courseInfo(number, year, semester, 
+                function(course) {
+                    if (course)
+                        course.created = course.updated = new Date();
+                    else    
+                        response.status(404);
 
-                response.json({
-                    status: course ? "Ok" : "Error",
-                    course: course || {}
+                    Course.create(course, function(err)
+                    {
+                        if (err)
+                            console.log(err);
+                        response.json({
+                            status: course ? "Ok" : "Error",
+                            course: course || {}
+                        });
+                    });
                 });
-            });
+        });
       });
 
     /**
@@ -91,7 +111,7 @@ module.exports = function(app) {
      * @apiError {json} status Error
      */
     app.post('/api/v3/general_courses', function(request, response) {
-        request.checkBody('year', 'Invalid year').isInt().gte(2010);
+        request.checkBody('year', 'Invalid year').isInt().isYear();
         request.checkBody('semester', 'Invalid semester').isInt().isSemester();
         request.checkBody('department', 'Invalid department').isInt();
         request.checkBody('degree_year', 'Invalid degree year').isInt();

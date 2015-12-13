@@ -12,6 +12,7 @@ mongoose.connect(dbUrl, function (err, res) {
 
 module.exports = {
     mongoose: mongoose,
+    Course: require('./model/course')(mongoose),
     Building: require('./model/building')(mongoose),
     Department: require('./model/department')(mongoose)
 };
