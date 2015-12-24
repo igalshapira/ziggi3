@@ -30,24 +30,45 @@ module.exports = function() {
       return Number(t[1]) + t[2]/60;
     }
 
+    function postQuery(data) {
+      var postData = "";
+      for (d in data)
+        postData += d+"="+data[d]+"&";
+      // Remove last &
+      return postData.substr(0, postData.length-1);
+    }
+
+    function normalizeNumber(courseNumber) {
+        var number = courseNumber.replace(/[^0-9]/g, "");
+        var dep = number.substr(0, 3);
+        var level = number.substr(3, 1);
+        var crs = number.substr(4, 4);
+        return dep + "." + level + "." + crs;
+    }
+
     return {
-      normalizeNumber: function(courseNumber) {
-            var number = courseNumber.replace(/[^0-9]/g, "");
-            var dep = number.substr(0, 3);
-            var level = number.substr(3, 1);
-            var crs = number.substr(4, 4);
-            return dep + "." + level + "." + crs;
-      },
+      normalizeNumber: normalizeNumber,
+
     	searchCourses: function(string, year, semester, next) {
-            var postData = "";
-            postData = postData + "oc_course_name="+hebUrlEncode(string);
-            postData = postData + "&on_year=" + year;
-            postData = postData + "&on_semester=" + semester;
-            postData = postData + "&step=1";
-            postData = postData + "&on_course_ins=0";
-
-            postData= postData + "&on_course_department=&on_course_ldegree_level=&on_course_degree_level=&on_course=&on_hours=&on_credit_points=&oc_lecturer_first_name=&oc_lecturer_last_name=&oc_end_time=&oc_start_time=&on_campus=";
-
+            var data = {
+               "oc_course_name" : hebUrlEncode(string),
+               "on_year" : year,
+               "on_semester" : semester,
+               "step" : 1,
+               "on_course_ins" : 0,
+               "on_course_department" : "",
+               "on_course_ldegree_level" : "",
+               "on_course_degree_level" : "",
+               "on_course" : "",
+               "on_hours" : "",
+               "on_credit_points" : "",
+               "oc_lecturer_first_name" : "",
+               "oc_lecturer_last_name" : "",
+               "oc_end_time" : "",
+               "oc_start_time" : "",
+               "on_campus" : ""
+            };
+            var postData = postQuery(data);
             var options = {
                 hostname: 'bgu4u.bgu.ac.il',
                 path: '/pls/scwp/!sc.AnnualCoursesAdv',
@@ -96,19 +117,20 @@ module.exports = function() {
                 });
         },
 
-        courseInfo: function(number, year, semester, next) {
-            var number = number.replace(/[^0-9]/g, "");
+        courseInfo: function(courseNumber, year, semester, next) {
+            var number = courseNumber.replace(/[^0-9]/g, "");
             var dep = number.substr(0, 3);
             var level = number.substr(3, 1);
             var crs = number.substr(4, 4);
-
-            var postData = "";
-            postData = postData + "rn_course_department="+dep;
-            postData = postData + "&rn_course_degree_level="+level;
-            postData = postData + "&rn_course="+crs;
-            postData = postData + "&rn_year=" + year;
-            postData = postData + "&rn_semester=" + semester;
-            postData = postData + "&rn_institution=0";
+            var data = {
+              "rn_course_department" : dep,
+              "rn_course_degree_level" : level,
+              "rn_course" : crs,
+              "rn_year" : year,
+              "rn_semester" : semester,
+              "rn_institution" : 0   
+            };
+            var postData = postQuery(data);
 
             var options = {
                 hostname: 'bgu4u.bgu.ac.il',
@@ -137,20 +159,21 @@ module.exports = function() {
                      
                      tds = $('form#mainForm td.BlackText')
 
-                     if (!tds || tds.length == 0)
-                         return next(null);
-
-                      course = {
+                     var course = {
                         year: year,
                         semester: semester,
-                        number: $(tds[0]).text().trim(),
-                        name: $(tds[1]).text().trim(),
-                        homepage: $('a', $(tds[1])).attr('href'),
-                        points: $(tds[3]).text().trim(),
-                        hours: $(tds[4]).text().trim(),
-                        groups: [],
-                        exams: []
+                        number: normalizeNumber(courseNumber)
                       };
+
+                     if (!tds || tds.length == 0)
+                         return next(course);
+
+                      course.name = $(tds[1]).text().trim();
+                      course.homepage = $('a', $(tds[1])).attr('href');
+                      course.points = $(tds[3]).text().trim();
+                      course.hours = $(tds[4]).text().trim();
+                      course.groups = [];
+                      course.exams = [];
 
                       var group = null;
                       var trs = $("tr", $('form#mainForm table')[2]);

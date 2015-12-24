@@ -1,6 +1,11 @@
 module.exports = function(app) {
     var uni = require('./uni/bgu')();
 
+    function renderError(response) {
+        response.status(500);
+        return response.json({ status: "Error" });
+    }
+
     /**
      * @apiGroup Courses
      * @apiName Search for courses
@@ -21,21 +26,49 @@ module.exports = function(app) {
         if (request.validationErrors())
             return response.json({ status: request.validationErrors() });
 
-        // TODO Look in cache
+        var Search = app.get('db').Search;
         var string = request.body.string;
         var year = request.body.year;
         var semester = request.body.semester;
 
-        // If not cache
-        uni.searchCourses(string, year, semester,
-            function(courses) {
-                if (!courses)
-                    response.status(404);
+        Search.findOne({
+            "year" : year,
+            "semester" : semester,
+            "phrase" : string
+        }, '-courses._id', function(err, results) {
+            if (err)
+                return renderError(response);
 
-                // TODO Add to cache
-                response.json({ 
-                    status: courses ? "Ok" : "Error",
-                    courses: courses || []
+            if (results)
+            {
+                return response.json({ 
+                        status: "Ok",
+                        courses: results.courses
+                    });
+            }
+
+            uni.searchCourses(string, year, semester,
+                function(courses) {
+                    if (courses)
+                        courses.updated = new Date();
+                    else
+                        response.status(404);
+                    
+                    Search.create({
+                        year: year,
+                        semester: semester,
+                        phrase: string,
+                        updated: new Date(),
+                        courses: courses || []
+                    }, function(err) {
+                        if (err)
+                            console.log(err);
+                        response.json({ 
+                            status: courses ? "Ok" : "Error",
+                            courses: courses || []
+                        });
+                    });
+                    
                 });
             });
       });
@@ -48,7 +81,7 @@ module.exports = function(app) {
      * @apiParam {String} number Course ID to retrieve information
      * @apiParam {Number} year
      * @apiParam {Number} semester
-     * @apiSuccess {json} Course Course information
+     * @apiSuccess {json} Course Course information. If without a name, then course is not available
      * @apiError {json} status Error
      */
     app.post('/api/v3/course', function(request, response) {
@@ -68,8 +101,8 @@ module.exports = function(app) {
             "number" : number
         }, '-_id -__v -groups._id -groups.hours._id -exams._id', function(err, course) {
             if (err)
-                return response.status(500).end("500")
-
+                return renderError(response);
+            
             if (course)
             {
                 return response.json({
@@ -82,16 +115,19 @@ module.exports = function(app) {
                 function(course) {
                     if (course)
                         course.created = course.updated = new Date();
-                    else    
-                        response.status(404);
+                    else
+                    {    
+                        response.status(500);
+                        return response.json({ status: "Error" });
+                    }
 
                     Course.create(course, function(err)
                     {
                         if (err)
                             console.log(err);
                         response.json({
-                            status: course ? "Ok" : "Error",
-                            course: course || {}
+                            status: "ok",
+                            course: course
                         });
                     });
                 });
