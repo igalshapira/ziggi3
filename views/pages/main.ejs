@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="he">
+    <head>
+        <title>זיגי</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <% assets.js.forEach(function(js){ %>
+            <script src="<%=js%>"></script><% }) %>
+        <% assets.css.forEach(function(css){ %>
+            <link rel="stylesheet" type="text/css" href="<%=css%>"><% }) %>
+    </head>
+    <body ng-app="Ziggi">
+        <h1>זיגי 3.0</h1>
+        <div ng-controller="SearchControl as ctrl" ng-cloak="">
+          <md-content class="md-padding">
+            <form ng-submit="$event.preventDefault()">
+              <md-autocomplete
+                md-selected-item="ctrl.selectedItem"
+                md-search-text="ctrl.searchText"
+                md-selected-item-change="ctrl.selectedItemChange(item)"
+                md-items="item in ctrl.querySearch(ctrl.searchText)"
+                md-item-text="item.name"
+                md-min-length="3"
+                placeholder="חפש קורס לפי שם או מספר">
+                <md-item-template>
+                  <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.name}}</span>
+                </md-item-template>
+                <md-not-found>
+                </md-not-found>
+              </md-autocomplete>
+            </form>
+          </md-content>
+        </div>
+
+        <div ng-controller="CoursesControl as ctrl" ng-cloak="">
+          <div ng-repeat="course in ctrl.courses" ng-class="course.loading">
+            {{course.number}} - {{course.name}}
+            <md-progress-circular md-mode="indeterminate" ng-show="!course.points"></md-progress-circular>
+            <ul ng-show="course.points">
+            <li>נקודות זכות - {{course.points}}</li>
+            <li>שעות שבועיות - {{course.hours}}</li>
+            <li>שעות:
+              <ul>
+                <li ng-repeat="group in course.groups">{{group.type}} {{group.number}} {{group.lecturer}} 
+                  <ul>
+                    <li ng-repeat="hour in group.hours">יום {{hour.day | hebShortDay }} {{hour.startTime}} - {{hour.endTime}}</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>בחינות:
+               <ul>
+               <li ng-repeat="exam in course.exams">מועד {{exam.order}} {{exam.startTime}} {{exam.rooms}}</li>
+               </ul>
+            </li>
+            </ul>
+           </div>
+        </div>
+    </body>
+</html>

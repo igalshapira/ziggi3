@@ -1,5 +1,6 @@
 module.exports = function(app) {
     var uni = require('./uni/bgu')();
+    var config = app.get('config');
 
     function renderError(response) {
         response.status(500);
@@ -39,11 +40,11 @@ module.exports = function(app) {
             if (err)
                 return renderError(response);
 
-            if (results)
+            if (results || config.cacheOnly)
             {
                 return response.json({ 
                         status: "Ok",
-                        courses: results.courses
+                        courses: results ? results.courses : []
                     });
             }
 
@@ -103,7 +104,7 @@ module.exports = function(app) {
             if (err)
                 return renderError(response);
             
-            if (course)
+            if (course || config.cacheOnly)
             {
                 return response.json({
                         status: "ok",

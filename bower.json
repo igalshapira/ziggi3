@@ -1,0 +1,28 @@
+{
+  "name": "Ziggi",
+  "description": "Latest and greatest version for Ziggi",
+  "main": "index.js",
+  "authors": [
+    "Igal Shapira <igal.shapira@gmail.com>"
+  ],
+  "license": "GPL-2.0",
+  "keywords": [
+    "students",
+    "schedule",
+    "ziggi"
+  ],
+  "homepage": "https://github.com/igalshapira/ziggi3",
+  "moduleType": [
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-material": "~1.0.1"
+  }
+}

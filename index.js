@@ -29,12 +29,19 @@ app.use(expressValidator({
 
 
 app.use(express.static(__dirname + '/public'));
+if (app.settings.env === 'development')
+{
+    app.use('/src',  express.static(__dirname + '/src'));
+    app.use('/out',  express.static(__dirname + '/out'));
+}
 app.use('/js',  express.static(__dirname + '/build'));
 app.use('/css',  express.static(__dirname + '/build'));
 // views is directory for all template files
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
+app.set('config', require('./app/config')[app.settings.env]);
+app.set('assets', require('./assets')[app.settings.env]);
 app.set('db', require('./app/db'));
 require('./app/routes')(app);
 
