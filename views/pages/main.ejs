@@ -44,14 +44,14 @@
               <ul>
                 <li ng-repeat="group in course.groups">{{group.type}} {{group.number}} {{group.lecturer}} 
                   <ul>
-                    <li ng-repeat="hour in group.hours">יום {{hour.day | hebShortDay }} {{hour.startTime}} - {{hour.endTime}}</li>
+                    <li ng-repeat="hour in group.hours">יום {{hour.day | hebShortDay }} <span class="heb-time-range">{{hour.startTime | hebTimeRange: hour.endTime}}</span></li>
                   </ul>
                 </li>
               </ul>
             </li>
             <li>בחינות:
                <ul>
-               <li ng-repeat="exam in course.exams">מועד {{exam.order}} {{exam.startTime}} {{exam.rooms}}</li>
+               <li ng-repeat="exam in course.exams">מועד {{exam.order}} {{exam.startTime | hebFullDateTime }}<br/>{{exam.rooms}}</li>
                </ul>
             </li>
             </ul>

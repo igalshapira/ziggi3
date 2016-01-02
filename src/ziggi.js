@@ -1,11 +1,42 @@
 (function () {
   'use strict';
+  var hebShortDays = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש']
+  var hebLongMonths = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמסר', 'אוקטובר', 'נובמבר', 'דצמבר'];
 
   angular.module('Ziggi',['ngMaterial', 'ngMessages'])
     .filter('hebShortDay', function() {
-      return function(input) {
-        var days = ['', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש']
-        return days[input] + "'";
+      return function(day) {
+        return hebShortDays[day-1] + "'";
+      };
+    })
+    .filter('hebTimeRange', function() {
+      function hour(h) {
+        if (parseInt(h) == h)
+          return h + ":00"
+        return parseInt(h) + ":" + (h - parseInt(h))*30;
+      }
+      return function(start, end) {
+        return hour(start) + " - " + hour(end);
+      }
+    })
+    .filter('hebFullDate', function() {
+      return function(date) {
+        var d = new Date(date);
+
+        return "יום " + hebShortDays[d.getUTCDay()] + "' " +
+          d.getUTCDate() + " ב" + hebLongMonths[d.getUTCMonth()] + " " + d.getUTCFullYear();
+      };
+    })
+    .filter('hebFullDateTime', function() {
+      function twoDigits(val) {
+          return ("0" + val).slice(-2);
+      }
+      return function(date) {
+        var d = new Date(date);
+
+        return "יום " + hebShortDays[d.getUTCDay()] + "' " +
+          d.getUTCDate() + " ב" + hebLongMonths[d.getUTCMonth()] + " " + d.getUTCFullYear() + " " +
+          d.getUTCHours() + ":" + twoDigits(d.getUTCMinutes());
       };
     })
     .service('coursesService', function($http){

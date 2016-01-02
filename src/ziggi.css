@@ -1,3 +1,7 @@
 body {
     direction: rtl;
 }
+
+span.heb-time-range {
+	direction: : ltr;
+}
