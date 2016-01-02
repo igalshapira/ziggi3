@@ -8,7 +8,7 @@ module.exports = function(mongoose) {
     var groupSchema = mongoose.Schema({
         number: Number,
         type: String,
-        lectuer: String,
+        lecturer: String,
         hours: [hourSchema]
     });
 

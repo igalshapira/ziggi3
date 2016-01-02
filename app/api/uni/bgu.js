@@ -179,7 +179,7 @@ module.exports = function() {
                             group = {
                               "number": number,
                               "type": $(tds[9]).text().trim(),
-                              "staff": $(tds[5]).text().trim(),
+                              "lecturer": $(tds[5]).text().trim(),
                               "hours": []
                             }
                           }
