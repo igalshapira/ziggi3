@@ -39,35 +39,63 @@
           d.getUTCHours() + ":" + twoDigits(d.getUTCMinutes());
       };
     })
-    .service('coursesService', function($http){
+    .factory('semestersService', function($http) {
+      function getSemesters() {
+          return $http.get("/api/v3/semesters");
+      }
+      
+      return {
+        getSemesters: getSemesters,
+        semester: null
+      };
+    })
+    .factory('coursesService', function($http){
         var courses = {};
 
-        var addCourse = function(course) {
+        var addCourse = function(year, semester, course) {
             courses[course.number] = course;
 
-            $http.post("/api/v3/course", { year: 2016, semester: 1, number: course.number })
+            $http.post("/api/v3/course", { year: year, semester: semester, number: course.number })
               .success(function(results) {
                 courses[course.number] = results.course;
             });
         };
 
-        var getCourses = function(){
-            return courses;
-        };
-
         return {
           addCourse: addCourse,
-          getCourses: getCourses
+          getCourses: function(){ return courses; }
         };
     })
-    .controller('SearchControl', function ($http, $timeout, $q, $log, coursesService) {
+    .controller('SemesterControl', function($scope, semestersService) {
       var self = this;
+      self.selectedIndex = 0;
+      self.semesters = [];
+
+      $scope.$watch('selectedIndex', function(current, previous) {
+        if (typeof current !== 'undefined' && self.semesters[current])
+          semestersService.semester = self.semesters[current];
+      });
+
+      semestersService.getSemesters().success(function(results) {
+        self.semesters = results.semesters;
+        self.selectedIndex = 0;
+        semestersService.semester = self.semesters[self.selectedIndex];
+      });
+    })
+    .controller('SearchControl', function($scope, $http, $timeout, $q, $log, coursesService, semestersService) {
+      var self = this;
+
+      self.semesters = semestersService;
 
       self.querySearch = function(query) {
         if (!query)
           return [];
 
-        return $http.post("/api/v3/courses", { year: 2016, semester: 1, string: query })
+        return $http.post("/api/v3/courses", {
+            year: self.semesters.semester.year,
+            semester: self.semesters.semester.semester,
+            string: query
+          })
           .then(function(results) {
             return results.data.courses;
           });
@@ -76,7 +104,7 @@
       self.selectedItemChange = function(item) {
         if (!item)
           return;
-        coursesService.addCourse(item);
+        coursesService.addCourse(self.semesters.semester.year, self.semesters.semester.semester, item);
       };
     })
     .controller('CoursesControl', function ($scope, coursesService) {

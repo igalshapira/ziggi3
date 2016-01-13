@@ -26,7 +26,7 @@ Ziggi 3 is a new projected, based on MEAN stack. With no actual plans of when an
 Create a new migration
 
 ```
-node_modules\.bin\mongoose-migrate-2 create <migration-name>
+node_modules\.bin\migrate create <migration-name>
 ```
 
 Run migrations

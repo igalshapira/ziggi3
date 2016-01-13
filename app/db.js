@@ -14,6 +14,7 @@ module.exports = {
     mongoose: mongoose,
     Course: require('./model/course')(mongoose),
     Search: require('./model/search')(mongoose),
+    Semester: require('./model/semester')(mongoose),
     Building: require('./model/building')(mongoose),
     Department: require('./model/department')(mongoose)
 };

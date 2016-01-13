@@ -12,7 +12,23 @@
     </head>
     <body ng-app="Ziggi">
         <h1>זיגי 3.0</h1>
-        <div ng-controller="SearchControl as ctrl" ng-cloak="">
+
+        <div ng-controller="SemesterControl as ctrl" ng-cloak>
+        {{t}}
+          <md-content>
+            <md-tabs md-selected="selectedIndex" md-dynamic-height md-border-bottom>
+                <md-tab ng-repeat="semester in ctrl.semesters" label="{{semester.name}}">
+                  <md-content class="md-padding">
+                  <p>סמסטר {{semester.semester}} {{semester.year}} - {{semester.name}}</p>
+                  <p>מ{{semester.startDate | hebFullDate}} עד {{semester.endDate | hebFullDate}}</p>
+                  <p>תקופת בחינות {{semester.examsStart | hebFullDate}} עד {{semester.examsEnd | hebFullDate}}</p>
+                  </md-content>
+              </md-tab>
+            </md-tabs>
+          </md-content>
+        </div>
+
+        <div ng-controller="SearchControl as ctrl"  ng-cloak ng-show="ctrl.semesters.semester">
           <md-content class="md-padding">
             <form ng-submit="$event.preventDefault()">
               <md-autocomplete
@@ -33,7 +49,7 @@
           </md-content>
         </div>
 
-        <div ng-controller="CoursesControl as ctrl" ng-cloak="">
+        <div ng-controller="CoursesControl as ctrl" ng-cloak>
           <div ng-repeat="course in ctrl.courses" ng-class="course.loading">
             {{course.number}} - {{course.name}}
             <md-progress-circular md-mode="indeterminate" ng-show="!course.points"></md-progress-circular>
