@@ -7,6 +7,12 @@ module.exports = function(app) {
   	});
   });
 
+  app.get("/map", function(request, response) {
+    response.render("pages/map", {
+      assets: app.get('assets')
+    });
+  });
+
   app.use(function(request, response, next){
     response.status(404);
     response.end("404");

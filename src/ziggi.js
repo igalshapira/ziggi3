@@ -112,4 +112,25 @@
 
       self.courses = coursesService.getCourses();
     });
+
+  angular.module('ZiggiMap',['ngMap'])
+    .controller('ZiggiMapController', function($http, NgMap) {
+      var self = this;
+
+      self.baseColor = 'ff776b';
+      self.courseColor = '4ae14a'
+      self.currentColor = '6b6b79';
+
+      self.zoom = 17;
+      self.lat = 31.262425; //Hardcoded bgu
+      self.lng = 34.801919;
+      self.buildings = [ ];
+
+      NgMap.getMap().then(function(map) {
+      });
+
+      $http.get('/api/v3/buildings').success(function(data) {
+        self.buildings = data.buildings;
+      });
+    });
 })();

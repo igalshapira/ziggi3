@@ -23,6 +23,7 @@
     "tests"
   ],
   "dependencies": {
-    "angular-material": "~1.0.1"
+    "angular-material": "~1.0.1",
+    "ngmap": "~1.16.7"
   }
 }
