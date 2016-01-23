@@ -3,4 +3,5 @@ module.exports = function(app) {
   require('./semesters')(app);
   require('./faculties')(app);
   require('./rooms')(app);
+  require('./calendar')(app);
 };

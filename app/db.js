@@ -16,5 +16,6 @@ module.exports = {
     Search: require('./model/search')(mongoose),
     Semester: require('./model/semester')(mongoose),
     Building: require('./model/building')(mongoose),
-    Department: require('./model/department')(mongoose)
+    Department: require('./model/department')(mongoose),
+    Calendar: require('./model/calendar')(mongoose)
 };

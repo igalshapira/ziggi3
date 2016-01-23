@@ -43,6 +43,12 @@ Api documentation can be generated using [Apidoc](http://apidocjs.com/).
 grunt apidoc
 ```
 
+## Hebrew Holidays
+
+Hebrew holidays are based on [HebCal Jewish calendar REST API](https://www.hebcal.com/home/195/jewish-calendar-rest-api).
+
+Each year holidays are loaded and stored in the data base using `grunt hebcal <--year=year>`
+
 ## License
 
 Ziggi3 is free software: you can redistribute it and/or modify
