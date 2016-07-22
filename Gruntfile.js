@@ -42,7 +42,7 @@ module.exports = function(grunt) {
     apidoc: {
       myapp: {
         src: "app/",
-        dest: "apidoc/"
+        dest: "public/apidoc/"
       }
     }
   });
