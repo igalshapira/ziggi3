@@ -5,3 +5,31 @@ body {
 span.heb-time-range {
 	direction: : ltr;
 }
+
+div#calendar {
+	width: 100%;
+	height: 100%;
+}
+
+div#calendar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+#calendar li {
+    display: block;
+    float: right;
+    width: 14.28%;
+    padding: 5px;
+    box-sizing:border-box;
+    border: 1px solid #ccc;
+    margin-right: -1px;
+    margin-bottom: -1px;
+    height: 15vh; /* Should change if we have 4 or 5 weeks in a month */
+}
+
+#calendar li.today {
+	background-color: #eeeeee;
+}

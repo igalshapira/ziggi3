@@ -13,6 +13,12 @@ module.exports = function(app) {
     });
   });
 
+  app.get("/calendar", function(request, response) {
+    response.render("pages/calendar", {
+      assets: app.get('assets')
+    });
+  });
+
   app.use(function(request, response, next){
     response.status(404);
     response.end("404");

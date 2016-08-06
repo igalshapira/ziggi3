@@ -1,7 +1,7 @@
 (function () {
   'use strict';
   var hebShortDays = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש']
-  var hebLongMonths = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמסר', 'אוקטובר', 'נובמבר', 'דצמבר'];
+  var hebLongMonths = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
 
   angular.module('Ziggi',['ngMaterial', 'ngMessages'])
     .filter('hebShortDay', function() {
@@ -131,6 +131,59 @@
 
       $http.get('/api/v3/buildings').success(function(data) {
         self.buildings = data.buildings;
+      });
+    });
+
+  angular.module('ZiggiCalendar', [])
+    .controller('ZiggiCalendarController', function($http) {
+      var self = this;
+      var today = new Date();
+      var currMonth = today.getUTCMonth();
+      var currYear = today.getUTCFullYear();
+      var currDay = today.getDate();
+      var firstDay = new Date(currYear, currMonth, 1);
+      var daysInMonth = new Date(currYear, currMonth+1, 0).getDate();
+
+      self.calendar = {};
+      self.calendar[currYear] = { months: {} };
+      self.calendar[currYear].months[currMonth+1] = {
+        name: hebLongMonths[currMonth],
+        days: []
+      };
+      
+      var month = self.calendar[currYear].months[currMonth+1];
+      // Temporary workaround - pad with days of previous month
+      for (var i = 1; i <= firstDay.getDay(); i++ )
+      {
+        month.days.push({
+          day : -i,
+          events: []
+        });
+      }
+
+      for (var i = 1; i <= daysInMonth; i++)
+      {
+        var day = {
+          day : i,
+          events: []
+        };
+        if (i == currDay)
+          day.today = true;
+        month.days.push(day);
+      }
+
+      // TODO: Should only load relevant months
+      $http.get('/api/v3/calendar').success(function(data) {
+        for (var i = 0; i < data.calendar.length; i++)
+        {
+          var ev = data.calendar[i];
+          var date = new Date(ev.date);
+          if (self.calendar[date.getFullYear()] &&
+            self.calendar[date.getFullYear()].months[date.getMonth()+1])
+          {
+            self.calendar[date.getFullYear()].months[date.getMonth()+1].days[date.getDate()].events.push(ev.title);
+          }
+        }
       });
     });
 })();
