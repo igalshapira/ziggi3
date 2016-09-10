@@ -14,12 +14,12 @@ should do the work.
 
 ## History
 
-Ziggi 1 was started at 2006, based on LAMP architecture. The code was originally published in google code.
+Ziggi 1 was started at 2006, based on [LAMP](https://en.wikipedia.org/wiki/LAMP_(software_bundle)) architecture. The code was originally published in google code.
 The source code is no longer available.
 
 Ziggi 2 project was based on Ruby On Rails, using postgres database. The source code was never published. The site went on air in 2013 and it is the current running ziggi version (http://www.ziggi.co)
 
-Ziggi 3 is a new projected, based on MEAN stack. With no actual plans of when and where and if to deploy it.
+Ziggi 3 is a new project, based on MEAN stack. With no actual plans of when and where and if to deploy it.
 
 ## Migrations
 
