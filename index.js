@@ -4,6 +4,7 @@ var cookieParser = require("cookie-parser");
 var session = require("express-session");
 var expressValidator = require('express-validator');
 var bodyParser = require('body-parser');
+var util = require('util');
 
 app.use(bodyParser.urlencoded({'extended':'true'}));
 app.use(bodyParser.json());
@@ -40,9 +41,12 @@ app.use('/css',  express.static(__dirname + '/build'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
-app.set('config', require('./app/config')[app.settings.env]);
+var config = require('./app/config');
+var currConfig = util._extend({}, config.common);
+currConfig = util._extend(currConfig, config[app.settings.env]);
+app.set('config', currConfig);
 app.set('assets', require('./assets')[app.settings.env]);
-app.set('db', require('./app/db'));
+app.set('db', require('./app/db')(app));
 require('./app/routes')(app);
 
 app.listen((process.env.PORT || 5000), function() {

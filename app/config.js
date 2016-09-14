@@ -1,8 +1,11 @@
 module.exports = {
+    common: {
+        university: "bgu"
+    },
     development: {
-    	cacheOnly: true
+        cacheOnly: true
     },
     production: {
-    	cacheOnly: false
+        cacheOnly: false
     }
 }

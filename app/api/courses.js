@@ -1,6 +1,6 @@
 module.exports = function(app) {
-    var uni = require('./uni/bgu')();
     var config = app.get('config');
+    var uni = require('./uni/' + config.university)();
 
     function renderError(response) {
         response.status(500);
