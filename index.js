@@ -46,7 +46,7 @@ var currConfig = util._extend({}, config.common);
 currConfig = util._extend(currConfig, config[app.settings.env]);
 app.set('config', currConfig);
 app.set('assets', require('./assets')[app.settings.env]);
-app.set('db', require('./app/db')(app));
+app.set('db', require('./app/db'));
 require('./app/routes')(app);
 
 app.listen((process.env.PORT || 5000), function() {
