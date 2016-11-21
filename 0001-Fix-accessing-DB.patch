@@ -1,0 +1,74 @@
+From 22e1fdd993f47cae7ef64043cf6d4747456f8a5b Mon Sep 17 00:00:00 2001
+From: Igal Shapira <igal.shapira@gmail.com>
+Date: Sun, 20 Nov 2016 21:22:47 +0200
+Subject: [PATCH] Fix accessing DB
+
+---
+ app/db.js | 40 +++++++++++++++++++---------------------
+ index.js  |  2 +-
+ 2 files changed, 20 insertions(+), 22 deletions(-)
+
+diff --git a/app/db.js b/app/db.js
+index 414667a..d2eca9b 100644
+--- a/app/db.js
++++ b/app/db.js
+@@ -1,24 +1,22 @@
+-module.exports = function (app) {
+-  var mongoose = require('mongoose');
+-  var config = app.get('config');
+-  var Schema = mongoose.Schema;
+-  var dbUrl = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || ('mongodb://localhost/ziggi3_' + config.university)
++var mongoose = require('mongoose');
++var config = require('./config');
++var Schema = mongoose.Schema;
++var dbUrl = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || ('mongodb://localhost/ziggi3_' + config.common.university)
+ 
+-  mongoose.connect(dbUrl, function (err, res) {
+-      if (err) {
+-        console.log ('ERROR connecting to: ' + dbUrl + '. ' + err);
+-      } else {
+-        console.log ('Succeeded connected to: ' + dbUrl);
+-    }
+-  });
++mongoose.connect(dbUrl, function (err, res) {
++    if (err) {
++      console.log ('ERROR connecting to: ' + dbUrl + '. ' + err);
++    } else {
++      console.log ('Succeeded connected to: ' + dbUrl);
++  }
++});
+ 
+-  return {
+-    mongoose: mongoose,
+-    Course: require('./model/course')(mongoose),
+-    Search: require('./model/search')(mongoose),
+-    Semester: require('./model/semester')(mongoose),
+-    Building: require('./model/building')(mongoose),
+-    Department: require('./model/department')(mongoose),
+-    Calendar: require('./model/calendar')(mongoose)
+-  };
++module.exports =  {
++  mongoose: mongoose,
++  Course: require('./model/course')(mongoose),
++  Search: require('./model/search')(mongoose),
++  Semester: require('./model/semester')(mongoose),
++  Building: require('./model/building')(mongoose),
++  Department: require('./model/department')(mongoose),
++  Calendar: require('./model/calendar')(mongoose)
+ };
+diff --git a/index.js b/index.js
+index 5dec070..22e3c77 100644
+--- a/index.js
++++ b/index.js
+@@ -46,7 +46,7 @@ var currConfig = util._extend({}, config.common);
+ currConfig = util._extend(currConfig, config[app.settings.env]);
+ app.set('config', currConfig);
+ app.set('assets', require('./assets')[app.settings.env]);
+-app.set('db', require('./app/db')(app));
++app.set('db', require('./app/db'));
+ require('./app/routes')(app);
+ 
+ app.listen((process.env.PORT || 5000), function() {
+-- 
+1.9.5.msysgit.1
+
