@@ -223,9 +223,9 @@ module.exports = function() {
                         course.groups.push(group);
 
                       //Exams
-                      var group = 0;
                       if ($('form#mainForm table')[4])
                       {
+                        var group = 0;
                         var trs = $("tr", $('form#mainForm table')[4]);
                         for (var t = 1; t < trs.length; t++)
                         {

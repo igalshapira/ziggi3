@@ -2,7 +2,8 @@ module.exports = function(mongoose) {
     var hourSchema = mongoose.Schema({
         day: Number,
         startTime: Number,
-        endTime: Number
+        endTime: Number,
+        room: String
     });
 
     var groupSchema = mongoose.Schema({

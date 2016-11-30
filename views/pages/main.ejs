@@ -60,7 +60,7 @@
               <ul>
                 <li ng-repeat="group in course.groups">{{group.type}} {{group.number}} {{group.lecturer}} 
                   <ul>
-                    <li ng-repeat="hour in group.hours">יום {{hour.day | hebShortDay }} <span class="heb-time-range">{{hour.startTime | hebTimeRange: hour.endTime}}</span></li>
+                    <li ng-repeat="hour in group.hours">יום {{hour.day | hebShortDay }} <span class="heb-time-range">{{hour.startTime | hebTimeRange: hour.endTime}}</span> {{hour.room}} </li>
                   </ul>
                 </li>
               </ul>
