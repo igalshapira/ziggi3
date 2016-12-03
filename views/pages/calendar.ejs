@@ -14,7 +14,7 @@
       <div ng-controller="ZiggiCalendarController as ctrl" ng-cloak id="calendar">
         <div class="year" ng-repeat="year in ctrl.calendar">
           <div class="month" ng-repeat="month in year.months">
-            <h2>{{month.name}}</h2>
+            <h2>{{month.name}} {{year.year}}</h2>
             <ul>
               <li ng-repeat="day in month.days | orderBy:'day'" ng-class="day.today ? 'today' : ''">
                 <span ng-show="day.day > 0">

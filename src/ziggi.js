@@ -145,7 +145,10 @@
       var daysInMonth = new Date(currYear, currMonth+1, 0).getDate();
 
       self.calendar = {};
-      self.calendar[currYear] = { months: {} };
+      self.calendar[currYear] = { 
+        year: currYear,
+        months: {}
+      };
       self.calendar[currYear].months[currMonth+1] = {
         name: hebLongMonths[currMonth],
         days: []
@@ -153,7 +156,8 @@
       
       var month = self.calendar[currYear].months[currMonth+1];
       // Temporary workaround - pad with days of previous month
-      for (var i = 1; i <= firstDay.getDay(); i++ )
+      var spacing = firstDay.getDay();
+      for (var i = 1; i <= spacing; i++ )
       {
         month.days.push({
           day : -i,
@@ -172,8 +176,7 @@
         month.days.push(day);
       }
 
-      // TODO: Should only load relevant months
-      $http.get('/api/v3/calendar').success(function(data) {
+      $http.get('/api/v3/calendar/'+currYear+'/'+(currMonth+1)).success(function(data) {
         for (var i = 0; i < data.calendar.length; i++)
         {
           var ev = data.calendar[i];
@@ -181,7 +184,7 @@
           if (self.calendar[date.getFullYear()] &&
             self.calendar[date.getFullYear()].months[date.getMonth()+1])
           {
-            self.calendar[date.getFullYear()].months[date.getMonth()+1].days[date.getDate()].events.push(ev.title);
+            self.calendar[date.getFullYear()].months[date.getMonth()+1].days[date.getDate()+spacing-1].events.push(ev.title);
           }
         }
       });

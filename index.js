@@ -22,6 +22,10 @@ app.use(expressValidator({
 	    	var val = parseInt(param);
 	        return val >= 2015;
 	    },
+	    isMonth: function(param) {
+	    	var val = parseInt(param);
+	    	return val >= 1 && val <= 12;
+	    },
 	    gte: function(param, num) {
 	        return param >= num;
 	    }
