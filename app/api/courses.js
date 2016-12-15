@@ -2,11 +2,6 @@ module.exports = function(app) {
     var config = app.get('config');
     var uni = require('./uni/' + config.university)();
 
-    function renderError(response) {
-        response.status(500);
-        return response.json({ status: "Error" });
-    }
-
     /**
      * @apiGroup Courses
      * @apiName Search for courses
@@ -18,14 +13,15 @@ module.exports = function(app) {
      * @apiSuccess {string[]} id IDs of matching courses
      * @apiSuccess {string[]} name Names of matching courses
      * @apiSuccess {string[]} english English names of matching courses
-     * @apiError {json} status Error
+     * @apiError InternalServerError
+     * @apiError BadRequest
      */
     app.post('/api/v3/courses', function(request, response) {
         request.checkBody('string', 'Invalid search string').notEmpty().isMinLength(3);
         request.checkBody('year', 'Invalid year').isInt().isYear();
         request.checkBody('semester', 'Invalid semester').isInt().isSemester();
         if (request.validationErrors())
-            return response.json({ status: request.validationErrors() });
+            return response.send(400).send(request.validationErrors());
 
         var Search = app.get('db').Search;
         var string = request.body.string;
@@ -38,14 +34,11 @@ module.exports = function(app) {
             "phrase" : string
         }, '-courses._id', function(err, results) {
             if (err)
-                return renderError(response);
+                return response.status(500).send();
 
             if (results || config.cacheOnly)
             {
-                return response.json({ 
-                        status: "Ok",
-                        courses: results ? results.courses : []
-                    });
+                return response.json(results ? results.courses : []);
             }
 
             uni.searchCourses(string, year, semester,
@@ -53,7 +46,7 @@ module.exports = function(app) {
                     if (courses)
                         courses.updated = new Date();
                     else
-                        response.status(404);
+                        return response.status(404).send();
                     
                     Search.create({
                         year: year,
@@ -63,11 +56,8 @@ module.exports = function(app) {
                         courses: courses || []
                     }, function(err) {
                         if (err)
-                            console.log(err);
-                        response.json({ 
-                            status: courses ? "Ok" : "Error",
-                            courses: courses || []
-                        });
+                            return response.status(500).send();
+                        response.json(courses);
                     });
                     
                 });
@@ -83,14 +73,14 @@ module.exports = function(app) {
      * @apiParam {Number} year
      * @apiParam {Number} semester
      * @apiSuccess {json} Course Course information. If without a name, then course is not available
-     * @apiError {json} status Error
+     * @apiError BadRequest
      */
     app.post('/api/v3/course', function(request, response) {
         request.checkBody('number', 'Invalid course number').notEmpty().isMinLength(8);
         request.checkBody('year', 'Invalid year').isInt().isYear();
         request.checkBody('semester', 'Invalid semester').isInt().isSemester();
         if (request.validationErrors())
-            return response.json({ status: request.validationErrors() });
+            return response.send(400).send(request.validationErrors());
 
         var Course = app.get('db').Course;
         var number = uni.normalizeNumber(request.body.number);
@@ -102,34 +92,23 @@ module.exports = function(app) {
             "number" : number
         }, '-_id -__v -groups._id -groups.hours._id -exams._id', function(err, course) {
             if (err)
-                return renderError(response);
+                return response.status(500).send();
             
             if (course || config.cacheOnly)
-            {
-                return response.json({
-                        status: "ok",
-                        course: course
-                    });
-            }
+                return response.json(course);
 
             uni.courseInfo(number, year, semester, 
                 function(course) {
                     if (course)
                         course.created = course.updated = new Date();
                     else
-                    {    
-                        response.status(500);
-                        return response.json({ status: "Error" });
-                    }
+                        return response.status(500).send();
 
                     Course.create(course, function(err)
                     {
                         if (err)
-                            console.log(err);
-                        response.json({
-                            status: "ok",
-                            course: course
-                        });
+                            return response.status(500).send();
+                        response.json(course);
                     });
                 });
         });
@@ -145,7 +124,7 @@ module.exports = function(app) {
      * @apiParam {Number} department Department number
      * @apiParam {Number} degree_year Year of studying
      * @apiSuccess {json} Courses List of available courses
-     * @apiError {json} status Error
+     * @apiError BadRequest
      */
     app.post('/api/v3/general_courses', function(request, response) {
         request.checkBody('year', 'Invalid year').isInt().isYear();
@@ -153,7 +132,7 @@ module.exports = function(app) {
         request.checkBody('department', 'Invalid department').isInt();
         request.checkBody('degree_year', 'Invalid degree year').isInt();
         if (request.validationErrors())
-            return response.json({ status: request.validationErrors() });
+            return response.send(400).send(request.validationErrors());
 
         // Look in cache first //TODO
         var year = request.body.year;

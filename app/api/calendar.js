@@ -7,7 +7,7 @@ module.exports = function(app) {
      * @apiParam {Number[2015-2099]} [year] Selected year
      * @apiParam {Number[1-12]} [month] Selected month
      * @apiSuccess {[]} List of events
-     * @apiError {json} status Error
+     * @apiError InternalServerError
      */
     app.get('/api/v3/calendar/:year?/:month?', function(request, response) {
         request.checkParams('year', 'Invalid year').optional().isInt().isYear();
@@ -37,10 +37,9 @@ module.exports = function(app) {
             }
         }
         app.settings.db.Calendar.find(query, { _id: 0, __v: 0 }, function(error, calendar) {
-            response.json({ 
-                status: error ? "Error" : "Ok",
-                calendar: calendar || []
-            });
+            if (error)
+                return response.status(500).send();
+            response.json(calendar);
         });
     });
 };

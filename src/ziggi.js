@@ -56,8 +56,8 @@
             courses[course.number] = course;
 
             $http.post("/api/v3/course", { year: year, semester: semester, number: course.number })
-              .success(function(results) {
-                courses[course.number] = results.course;
+              .success(function(course) {
+                courses[course.number] = course;
             });
         };
 
@@ -76,8 +76,8 @@
           semestersService.semester = self.semesters[current];
       });
 
-      semestersService.getSemesters().success(function(results) {
-        self.semesters = results.semesters;
+      semestersService.getSemesters().success(function(semesters) {
+        self.semesters = semesters;
         self.selectedIndex = 0;
         semestersService.semester = self.semesters[self.selectedIndex];
       });
@@ -97,7 +97,7 @@
             string: query
           })
           .then(function(results) {
-            return results.data.courses;
+            return results.data;
           });
       };
 
@@ -129,8 +129,8 @@
       NgMap.getMap().then(function(map) {
       });
 
-      $http.get('/api/v3/buildings').success(function(data) {
-        self.buildings = data.buildings;
+      $http.get('/api/v3/buildings').success(function(buildings) {
+        self.buildings = buildings;
       });
     });
 
@@ -176,10 +176,10 @@
         month.days.push(day);
       }
 
-      $http.get('/api/v3/calendar/'+currYear+'/'+(currMonth+1)).success(function(data) {
-        for (var i = 0; i < data.calendar.length; i++)
+      $http.get('/api/v3/calendar/'+currYear+'/'+(currMonth+1)).success(function(calendar) {
+        for (var i = 0; i < calendar.length; i++)
         {
-          var ev = data.calendar[i];
+          var ev = calendar[i];
           var date = new Date(ev.date);
           if (self.calendar[date.getFullYear()] &&
             self.calendar[date.getFullYear()].months[date.getMonth()+1])
