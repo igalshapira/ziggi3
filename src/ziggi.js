@@ -56,7 +56,8 @@
             courses[course.number] = course;
 
             $http.post("/api/v3/course", { year: year, semester: semester, number: course.number })
-              .success(function(course) {
+              .then(function(response) {
+                var course = response.data;
                 courses[course.number] = course;
             });
         };
@@ -76,7 +77,8 @@
           semestersService.semester = self.semesters[current];
       });
 
-      semestersService.getSemesters().success(function(semesters) {
+      semestersService.getSemesters().then(function(response) {
+        var semesters = response.data;
         self.semesters = semesters;
         self.selectedIndex = 0;
         semestersService.semester = self.semesters[self.selectedIndex];
@@ -129,8 +131,8 @@
       NgMap.getMap().then(function(map) {
       });
 
-      $http.get('/api/v3/buildings').success(function(buildings) {
-        self.buildings = buildings;
+      $http.get('/api/v3/buildings').then(function(response) {
+        self.buildings = response.data;
       });
     });
 
@@ -176,7 +178,8 @@
         month.days.push(day);
       }
 
-      $http.get('/api/v3/calendar/'+currYear+'/'+(currMonth+1)).success(function(calendar) {
+      $http.get('/api/v3/calendar/'+currYear+'/'+(currMonth+1)).then(function(response) {
+        var calendar = response.data;
         for (var i = 0; i < calendar.length; i++)
         {
           var ev = calendar[i];
