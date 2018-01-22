@@ -23,7 +23,7 @@ module.exports = function(app) {
      * @apiVersion 3.0.0
      * @api {get} buildings Show list of available buildings
      * @apiParam {string} name Building name
-     * @apiSuccess {} building data
+     * @apiSuccess {string} name building name
      * @apiError BuildingNotFound
      */
     app.get('/api/v3/buildings/:name', function(request, response) {
