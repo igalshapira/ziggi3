@@ -2,14 +2,26 @@
 
 ## Installation
 
-Ziggi 3.0 is a nodejs application. So basically after installation of node. a simple:
+Ziggi 3.0 is a nodejs application. Install the prerequisites below and a simple:
 
 ```
+git clone https://github.com/igalshapira/ziggi3.git
+cd ziggi3
 npm install
-node index.js
+npm start
 ```
 
 should do the work.
+
+## Prerequisites
+
+* Install [nodejs](https://nodejs.org/en/download/)
+* Choose database. You can use one of the two:
+  * Download and install [mongodb](https://www.mongodb.com/)\
+    * Set environment variable: set MONGO_CONNECTION_STRING=mongodb://localhost/ziggi
+  * Use [Azure CosmosDB](https://azure.microsoft.com/en-us/try/cosmosdb/)
+    * Set API to MongoDB
+    * Set environment variable: set MONGO_CONNECTION_STRING=mongodb://{yourdb}:{yourkey}@{yourdb}.documents.azure.com:10255/?ssl=true
 
 
 ## History

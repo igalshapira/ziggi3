@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var config = require('./config');
 var Schema = mongoose.Schema;
-var dbUrl = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || ('mongodb://localhost/ziggi3_' + config.common.university)
+const dbUrl = process.env.MONGO_CONNECTION_STRING;
 
 mongoose.connect(dbUrl, function (err, res) {
     if (err) {
