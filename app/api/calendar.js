@@ -1,19 +1,24 @@
 module.exports = function(app) {
     /**
-     * @apiGroup calendar
+     * @apiGroup Calendar
      * @apiName Get list of calendar events
      * @apiVersion 3.0.0
-     * @api {get} calendar Get list of calendar events
+     * @api {get} calendar/:year?/:month? Get list of calendar events
      * @apiParam {Number[2015-2099]} [year] Selected year
      * @apiParam {Number[1-12]} [month] Selected month
-     * @apiSuccess {[]} List of events
+     * @apiSuccess {Object[]} events List of events
+     * @apiSuccess {string} events.type Type of event (heb for hebrew holidays)
+     * @apiSuccess {string} events.title
+     * @apiSuccess {date} events.date
      * @apiError InternalServerError
+     * @apiError InvalidYear
+     * @apiError InvalidMonth
      */
     app.get('/api/v3/calendar/:year?/:month?', function(request, response) {
         request.checkParams('year', 'Invalid year').optional().isInt().isYear();
         request.checkParams('month', 'Invalid month').optional().isInt().isMonth();
         if (request.validationErrors())
-            return response.json({ status: request.validationErrors() });
+          return response.status(400).send(request.validationErrors().msg);
 
         var year = parseInt(request.params.year);
         var month = parseInt(request.params.month);

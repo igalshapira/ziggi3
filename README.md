@@ -15,6 +15,9 @@ npm start
 
 should do the work.
 
+## API Documenation
+A good place to start would be [http://localhost:5000/apidoc](http://localhost:5000/apidoc)
+
 ## Prerequisites
 
 * Install [nodejs](https://nodejs.org/en/download/)

@@ -1,10 +1,14 @@
 module.exports = function(app) {
     /**
-     * @apiGroup buildings
-     * @apiName Show list of buildings
+     * @apiGroup Building and rooms
+     * @apiName ListBuildings
      * @apiVersion 3.0.0
-     * @api {get} buildings Show list of available buildings
-     * @apiSuccess {[]} buildings List of buildings
+     * @api {get} buildings List all buildings
+     * @apiSuccess {Object[]} buildings List of buildings
+     * @apiSuccess {string} buildings.name
+     * @apiSuccess {Number} buildings.lat
+     * @apiSuccess {Number} buildings.lng
+     * @apiSuccess {string} buildings.comments
      * @apiError InternalServerError
      */
     app.get('/api/v3/buildings', function(request, response) {
@@ -18,12 +22,16 @@ module.exports = function(app) {
     });
 
     /**
-     * @apiGroup building
+     * @apiGroup Building and rooms
      * @apiName Get building information
      * @apiVersion 3.0.0
-     * @api {get} buildings Show list of available buildings
+     * @api {get} buildings/:name Get specific building data
      * @apiParam {string} name Building name
-     * @apiSuccess {string} name building name
+     * @apiSuccess {string} name
+     * @apiSuccess {Number} lat
+     * @apiSuccess {Number} lng
+     * @apiSuccess {string} comments
+     * @apiSuccess {Object[]} rooms
      * @apiError BuildingNotFound
      */
     app.get('/api/v3/buildings/:name', function(request, response) {
