@@ -1,3 +1,5 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 # Ziggi 3.0
 
 ## Installation
@@ -63,14 +65,4 @@ Each year holidays are loaded and stored in the data base using `grunt hebcal <-
 
 ## License
 
-Ziggi3 is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or
-(at your option) any later version.
-
-Ziggi3 is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-See full license in LICENSE file.
+See full license in [LICENSE](LICENSE) file.
