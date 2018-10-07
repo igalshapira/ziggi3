@@ -80,7 +80,7 @@ module.exports = function(app) {
         request.checkBody('year', 'Invalid year').isInt().isYear();
         request.checkBody('semester', 'Invalid semester').isInt().isSemester();
         if (request.validationErrors())
-            return response.send(400).send(request.validationErrors());
+            return response.status(400).send(request.validationErrors());
 
         var Course = app.get('db').Course;
         var number = uni.normalizeNumber(request.body.number);
